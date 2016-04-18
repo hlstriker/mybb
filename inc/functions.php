@@ -2992,7 +2992,7 @@ function random_str($length=8, $complex=false)
  */
 function format_name($username, $usergroup, $displaygroup=0)
 {
-	global $groupscache, $cache;
+	global $groupscache, $cache, $plugins;
 
 	if(!is_array($groupscache))
 	{
@@ -3006,8 +3006,12 @@ function format_name($username, $usergroup, $displaygroup=0)
 
 	$ugroup = $groupscache[$usergroup];
 	$format = $ugroup['namestyle'];
-	$userin = substr_count($format, "{username}");
 
+	$args = array('format' => $format, 'username' => $username);
+	$args = $plugins->run_hooks("format_name_custom_style", $args);
+	$format = $args['format'];
+
+	$userin = substr_count($format, "{username}");
 	if($userin == 0)
 	{
 		$format = "{username}";
